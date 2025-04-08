@@ -3,54 +3,36 @@
     <v-card style="padding: 20px;">
       <v-row>
         <v-col md="5">
+          <v-toolbar class="docversiontoolbar">
+            <p>Document Versions</p>
+            <v-spacer></v-spacer>
+            <v-btn small @click="Comparesection">Compare</v-btn>
+          </v-toolbar>
 
-          <v-row style="padding: 10px 0px;">
-            <v-col md="9">
-              <p>Document Versions</p>
-            </v-col>
-            <v-col md="3">
-              <v-btn v-if="showcompareBtn" small @click="Comparesection" style="background-color: #1976d2;">Cancel</v-btn>
-              <v-btn v-else small @click="Comparesection">Compare</v-btn>
-            </v-col>
-          </v-row>
-
-          <div v-for="version in newVersionList" :key="version.id" @click="getversiondetail(version)">
-            <VersionCard :version="version" :SelectedVersionid="SelectedVersionid" />
+          <div v-for="version in versionslist" :key="version.id" @click="getversiondetail(version)">
+            <VersionCard :version="version" />
           </div>
 
           <div v-if="versiondeatilshow" style="border: 1px solid #e3e2e2; margin-top: 20px;">
             <v-toolbar style="background-color: #EBECF1;">
               <p>Version Details</p>
               <v-spacer></v-spacer>
-              <v-btn v-if="!showeditfeilds" small @click="OpenEditForm()"> Edit Details -></v-btn>
-              <div v-else style="display: flex;">
-                <v-btn style="margin-right: 10px;" small @click="SaveEditInfo()"> Save Details</v-btn>
-                <v-btn small @click="CancelEditForm()"> Cancel</v-btn>
-              </div>
+              <p> View Details -></p>
             </v-toolbar>
             <v-simple-table fixed-header style="background-color: #EBECF1;">
               <template v-slot:default>
                 <tbody>
                   <tr>
                     <td>Name</td>
-                    <td v-if="showeditfeilds" style="justify-items: right;">
-                      <v-text-field v-model="updatedName" outlined class="editfield"></v-text-field>
-                    </td>
-                    <td v-else style="text-align: right;">{{ versiondetail.Name }}</td>
+                    <td style="text-align: right;">{{ versiondetail.Name }}</td>
                   </tr>
                   <tr>
                     <td>Created</td>
-                    <td v-if="showeditfeilds" style="justify-items: right;">
-                      <v-text-field v-model="updatedCreated" outlined class="editfield"></v-text-field>
-                    </td>
-                  <td v-else style="text-align: right;">{{ versiondetail.Created }}</td>
+                    <td style="text-align: right;">{{ versiondetail.Created }}</td>
                   </tr>
                   <tr>
                     <td>State</td>
-                    <td v-if="showeditfeilds" style="justify-items: right;">
-                      <v-text-field v-model="updatedState" outlined class="editfield"></v-text-field>
-                    </td>
-                    <td v-else style="text-align: right;">
+                    <td style="text-align: right;">
                       <v-btn small style="box-shadow: none; border-radius: 18px; padding:2px 10px;"
                         :Class="StatusColor">
                         {{ versiondetail.State }}
@@ -59,29 +41,19 @@
                   </tr>
                   <tr>
                     <td>Author</td>
-                    <td v-if="showeditfeilds" style="justify-items: right;">
-                      <v-text-field v-model="updatedAuthor" outlined class="editfield"></v-text-field>
-                    </td>
-                    <td v-else style="text-align: right;">{{ versiondetail.Author }}</td>
+                    <td style="text-align: right;">{{ versiondetail.Author }}</td>
                   </tr>
                   <tr>
                     <td>Changes</td>
-                    <td v-if="showeditfeilds" style="justify-items: right;">
-                      <v-text-field v-model="editchange" outlined  class="editfield">
-                      </v-text-field>
-                    </td>
-                    <td v-else style="justify-items: right;">
-                      {{ versiondetail.changes }}
-                    </td>
+                    <td style="text-align: right;">Updated Complience Section based on legal feedback</td>
                   </tr>
                 </tbody>
               </template>
             </v-simple-table>
           </div>
 
-          <div v-if="showcomparesection"
-            style="border: 1px solid #e3e2e2; padding: 10px; margin-bottom: 10px; margin-top: 20px;">
-            <p style="padding: 10px 5px 0px 5px;">Version Comparision</p>
+          <div v-if="showcomparesection" style="border: 1px solid #e3e2e2; padding: 10px; margin-bottom: 10px;">
+            <p style="padding: 10px 5px;">Version Comparision</p>
             <div style="background-color: #EBECF1; padding: 10px;">
               <div class="d-flex">
                 <div class="StatusDot" style="background-color: green; margin-top: 8px;"></div>
@@ -96,11 +68,10 @@
                 <span class="dealStageTitle">Modified Content</span>
               </div>
             </div>
-            <p style="color: grey; margin:8px 0px">Comparing Version {{ selectedVersionsforcomparision[0].Name }} With {{ selectedVersionsforcomparision[1].Name }}</p>
-            <div style="background-color: #EBECF1; padding: 10px; border: 1px solid grey;">
-              <p style="color: green; margin-bottom: 0px;">{{ selectedVersionsforcomparision[0].changes|| "-"  }}</p>
-              <p style="color: red; margin-bottom: 0px;">{{ selectedVersionsforcomparision[1].changes || "-" }}
-              </p>
+            <div style="background-color: #EBECF1; padding: 10px;">
+              <p style="color: red; margin-bottom: 0px;">- Removed audit requirements from compiliance section</p>
+              <p style="color: red; margin-bottom: 0px;">- Removed final authorization process from Approval workflow</p>
+              <p style="margin-bottom: 0px;">- Revert Reporting procedures to previous version</p>
             </div>
           </div>
 
@@ -200,6 +171,7 @@
             </v-timeline>
           </div>
 
+
           <v-card style="padding: 20px;">
             <h3 class="form-subtitle">Timeline Settings</h3>
 
@@ -225,6 +197,7 @@
               </v-col>
 
               <v-col md="6" lg="6" sm="12" class="pt-2 pb-2">
+
                 <span class="FormField-label">Document Validity (days)</span>
                 <v-text-field v-model="updateDocumentValidityDays" placeholder="Enter validity days" outlined
                   class="textfield"></v-text-field>
@@ -240,24 +213,14 @@
 
 <script>
 import VersionCard from './VersionCard.vue'
-import { mapWritableState } from 'pinia';
-import { useCounterStore } from '@/store';
-
 export default {
   name: 'HelloWorld',
 
   data() {
     return {
       // Calculatedoctimelinedetail:{
-      // },
-      // showcompareBtn:false,
-      editchange:"",
-      updatedName:"",
-      updatedCreated:"",
-      updatedState:"",
-      updatedAuthor:"",
 
-      showeditfeilds: false,
+      // },
       showcomparesection: false,
       versiondeatilshow: false,
       ReviewDatePickerVisible: false,
@@ -280,212 +243,144 @@ export default {
       updateReviewgdate: null,
       updateDocCreatedDate: null,
       updateApprovalDeadlineDate: null,
-
-      SelectedVersion: false,
-      SelectedVersionid: null,
-
-      selectedVersionsforcomparision:[],
-
       versionslist: [
         {
           Name: "Version 1.0",
           Created: "Mar 10,2025",
           State: "Approved",
           Author: "Kathrin Farnandes",
-          changes:"",
-          id: 1
         },
         {
           Name: "Version 2.0",
           Created: "Mar 15,2025",
           State: "In Review",
-          Author: "Mylie Cyrus",
-          changes:"",
-          id: 2
+          Author: "Mylie Cyrus"
         },
         {
           Name: "Version 3.0",
           Created: "Mar 20,2025",
           State: "In Review",
-          Author: "Joe Jonas",
-          changes:"",
-          id: 3
+          Author: "Joe Jonas"
         },
         {
           Name: "Version 4.0",
           Created: "Mar 27,2025",
           State: "Draft",
-          Author: "Nick Jonas",
-          changes:"",
-          id: 4
+          Author: "Nick Jonas"
         },
         {
           Name: "Version 5.0",
           Created: "Apr 1,2025",
           State: "Draft",
-          Author: "Jane Smith",
-          changes:"",
-          id: 5
+          Author: "Jane Smith"
         },
       ],
-      versiondetail: {
-      },
-      newVersionList: null,
+      versiondetail: {}
     }
   },
   methods: {
-
-    OpenEditForm(){
-      console.log("versiondetail",this.versiondetail);
-      this.updatedName=this.versiondetail.Name;
-      this.updatedCreated=this.versiondetail.Created;
-      this.updatedState=this.versiondetail.State;
-      this.updatedAuthor=this.versiondetail.Author;
-      this.editchange=this.versiondetail.changes;
-      this.showeditfeilds=true;
-    },
-    SaveEditInfo(){
-      
-      console.log("newVersionList",this.newVersionList)
-      // console.log("versiondetail.id",this.versiondetail.id)
-      let updatedversion=this.newVersionList.find(version=>version.id==this.versiondetail.id)
-      console.log("updatedversion",updatedversion.Name)
-
-      updatedversion.Name=this.updatedName;
-      updatedversion.Created=this.updatedCreated;
-      updatedversion.State=this.updatedState;
-      updatedversion.Author=this.updatedAuthor;
-      updatedversion.changes=this.editchange;
-
-      console.log("newVersionList",this.newVersionList)
-      localStorage.setItem("versionlist", JSON.stringify(this.newVersionList));
-
-      this.showeditfeilds=false;
-    },
     Comparesection() {
-      if(this.SelectedVersionid && this.selectedVersionsforcomparision.length !==2){
-        this.showcomparesection = true;
-        this.showcompareBtn = true;
-      }
-
+      this.showcomparesection = true;
+      
     },
     recalculateDays() {
-      let docCreatedDate = new Date(this.DocCreatedDate);
-      // console.log("docCreatedDate",docCreatedDate)
 
-      if (this.updateReviewDays) {
-        let reviewDate = new Date(docCreatedDate);
-        // console.log("reviewDate",reviewDate)
-
-        reviewDate.setDate(docCreatedDate.getDate() + parseInt(this.updateReviewDays));
-
-        this.Reviewgdate = reviewDate.toISOString().split('T')[0];
-        console.log("formatted Reviewgdate", this.Reviewgdate)
-      }
-
-      if (this.updateApprovalDurationDays) {
-        let reviewDate = new Date(this.Reviewgdate);
-        // console.log("reviewDate",reviewDate)
-
-        let approvalDate = new Date(reviewDate);
-        approvalDate.setDate(reviewDate.getDate() + parseInt(this.updateApprovalDurationDays));
-
-        this.ApprovalDeadlineDate = approvalDate.toISOString().split('T')[0];
-        console.log("formatted ApprovalDeadlineDate", this.ApprovalDeadlineDate)
-      }
-
-      if (this.updatePublicationLeadDays) {
-        let approvalDate = new Date(this.ApprovalDeadlineDate);
-        // console.log("approvalDate",approvalDate)
-
-        let publicationDate = new Date(approvalDate);
-        publicationDate.setDate(approvalDate.getDate() + parseInt(this.updatePublicationLeadDays));
-
-        this.PublicationDate = publicationDate.toISOString().split('T')[0];
-        console.log("formatted PublicationDate", this.PublicationDate)
-      }
-
-      if (this.updateDocumentValidityDays) {
-        let publicationDate = new Date(this.PublicationDate);
-        // console.log("publicationDate",publicationDate)
-
-        let expiryDate = new Date(publicationDate);
-        expiryDate.setDate(publicationDate.getDate() + parseInt(this.updateDocumentValidityDays));
-
-        this.ExpiryDate = expiryDate.toISOString().split('T')[0];
-        console.log("formatted ExpiryDate", this.ExpiryDate)
-      }
+      // this.ReviewDays = this.updateReviewDays;
+      // this.ApprovalDurationDays = this.updateApprovalDurationDays;
+      // this.PublicationLeadDays = this.updatePublicationLeadDays;
+      // this.DocumentValidityDays = this.updateDocumentValidityDays;
     },
     getversiondetail(version) {
       console.log("version", version)
-      this.SelectedVersionid = version.id
-      console.log("SelectedVersionid", this.SelectedVersionid)
       this.versiondetail = version;
-
       console.log("versiondetail", this.versiondetail);
       this.versiondeatilshow = true;
 
-      if(this.selectedVersionsforcomparision.length<2){
-        this.selectedVersionsforcomparision.push(version);
-        console.log("selectedVersionsforcomparision",this.selectedVersionsforcomparision)
-      }else if(this.selectedVersionsforcomparision.length==1){
-        this.selectedVersionsforcomparision.pop();
-        console.log("selectedVersionsforcomparision",this.selectedVersionsforcomparision)
-        this.selectedVersionsforcomparision.push(version);
-        
-      }else{
-        this.selectedVersionsforcomparision=[];
-      }
-    
-      console.log("selectedVersionsforcomparision",this.selectedVersionsforcomparision)
+    },
+    getDocCreatedDate() {
+      let newDocCreatedDate = this.DocCreatedDate.split("-");
+      this.updateDocCreatedDate = newDocCreatedDate[2]
+      console.log("newDocCreatedDate", newDocCreatedDate)
+      console.log("updatedate", this.updateDocCreatedDate)
+
+    },
+    getReviewDate() {
+      let newReviewgdate = this.Reviewgdate.split("-");
+      this.updateReviewgdate = newReviewgdate[2]
+      console.log("newReviewgdate", newReviewgdate)
+      console.log("updatedate", this.updateReviewgdate)
+
+    },
+    getApprovalDate() {
+      let newApprovalDeadlineDate = this.ApprovalDeadlineDate.split("-");
+      this.updateApprovalDeadlineDate = newApprovalDeadlineDate[2]
+      console.log("newReviewgdate", newApprovalDeadlineDate)
+      console.log("updatedate", this.updateApprovalDeadlineDate)
+
+    },
+    getPublicationDate() {
+      let newPublicationDate = this.PublicationDate.split("-");
+      this.updatePublicationDate = newPublicationDate[2]
+      console.log("newPublicationDate", newPublicationDate)
+      console.log("updatedate", this.updatePublicationDate)
+
+    },
+    getExpiryDate() {
+      let newExpiryDate = this.ExpiryDate.split("-");
+      this.updateExpirydate = newExpiryDate[2]
+      console.log("newExpiryDate", newExpiryDate)
+      console.log("updatedate", this.updateExpirydate)
 
     },
     updateDate() {
-      let docCreatedDate = new Date(this.DocCreatedDate);
-      console.log("docCreatedDate", docCreatedDate)
-
-      let reviewDate = new Date(this.Reviewgdate);
-      console.log("reviewDate", reviewDate)
-      let approvalDate = new Date(this.ApprovalDeadlineDate);
-      // console.log("approvalDate",approvalDate)
-      let publicationDate = new Date(this.PublicationDate);
-      // console.log("publicationDate",publicationDate)
-      let expiryDate = new Date(this.ExpiryDate);
-      // console.log("expiryDate",expiryDate)
-
-      // this.updateReviewDays = Math.round(reviewDate - docCreatedDate);
-      // console.log("updateReviewDays",this.updateReviewDays)
-
-      this.updateReviewDays = Math.round((reviewDate - docCreatedDate) / (1000 * 60 * 60 * 24));
-      console.log("updateReviewDays", this.updateReviewDays)
-
-
-      this.updateApprovalDurationDays = Math.round((approvalDate - reviewDate) / (1000 * 60 * 60 * 24));
-      console.log("updateApprovalDurationDays", this.updateApprovalDurationDays)
-
-      this.updatePublicationLeadDays = Math.round((publicationDate - approvalDate) / (1000 * 60 * 60 * 24));
-      console.log("updatePublicationLeadDays", this.updatePublicationLeadDays)
-
-      this.updateDocumentValidityDays = Math.round((expiryDate - publicationDate) / (1000 * 60 * 60 * 24));
-      console.log("updateDocumentValidityDays", this.updateDocumentValidityDays)
+      this.getDocCreatedDate();
+      this.getReviewDate();
+      this.getApprovalDate();
+      this.getPublicationDate();
+      this.getExpiryDate();
+    },
+    updatedays() {
+      this.updateReviewDays = this.ReviewDays;
+      this.updateApprovalDurationDays = this.ApprovalDurationDays;
+      this.updatePublicationLeadDays = this.PublicationLeadDays;
+      this.updateDocumentValidityDays = this.DocumentValidityDays;
     }
   },
   components: {
     VersionCard
   },
   computed: {
-    ...mapWritableState(useCounterStore, ['showcompareBtn']),
     ReviewDays() {
-      return this.updateReviewDays;
+      if (this.updateReviewgdate < this.updateDocCreatedDate) {
+        return this.updateDocCreatedDate - this.updateReviewgdate;
+      } else if (this.updateReviewDays) {
+        return this.updateReviewDays;
+      }
+      return this.updateReviewgdate - this.updateDocCreatedDate;
     },
     ApprovalDurationDays() {
-      return this.updateApprovalDurationDays
+      if (this.updateApprovalDeadlineDate < this.updateReviewgdate) {
+        return this.updateReviewgdate - this.updateDocCreatedDate;
+      } else if (this.updateApprovalDurationDays) {
+        return this.updateApprovalDurationDays;
+      }
+      return this.updateApprovalDeadlineDate - this.updateReviewgdate;
     },
     PublicationLeadDays() {
-      return this.updatePublicationLeadDays
+      if (this.updatePublicationDate < this.updateApprovalDeadlineDate) {
+        return this.updateApprovalDeadlineDate - this.updatePublicationDate;
+      } else if (this.updatePublicationLeadDays) {
+        return this.updatePublicationLeadDays;
+      }
+      return this.updatePublicationDate - this.updateApprovalDeadlineDate;
     },
     DocumentValidityDays() {
-      return this.updateDocumentValidityDays
+      if (this.updateExpirydate < this.updatePublicationDate) {
+        return this.updatePublicationDate - this.updateExpirydate;
+      } else if (this.updateDocumentValidityDays) {
+        return this.updateDocumentValidityDays;
+      }
+      return this.updateExpirydate - this.updatePublicationDate;
     },
 
     StatusColor() {
@@ -501,61 +396,16 @@ export default {
 
 
   },
-  watch: {
-    Reviewgdate(newDate) {
-      let reviewDate = new Date(newDate);
-      if (this.updateApprovalDurationDays) {
-        let approvalDate = new Date(reviewDate);
-        approvalDate.setDate(reviewDate.getDate() + parseInt(this.updateApprovalDurationDays));
-        // this.ApprovalDeadlineDate = new Date(approvalDate);
-        this.ApprovalDeadlineDate = approvalDate.toISOString().split('T')[0];
-      }
-    },
-    ApprovalDeadlineDate(newDate) {
-      let approvalDate = new Date(newDate);
-      if (this.updatePublicationLeadDays) {
-        let publicationDate = new Date(approvalDate);
-        publicationDate.setDate(approvalDate.getDate() + parseInt(this.updatePublicationLeadDays));
-        // this.PublicationDate = new Date(publicationDate);
-        this.PublicationDate = publicationDate.toISOString().split('T')[0];
-
-      }
-    },
-    PublicationDate(newDate) {
-      let publicationDate = new Date(newDate);
-      if (this.updateDocumentValidityDays) {
-        let expiryDate = new Date(publicationDate);
-        expiryDate.setDate(publicationDate.getDate() + parseInt(this.updateDocumentValidityDays));
-        // this.ExpiryDate = new Date(expiryDate);
-        this.ExpiryDate = expiryDate.toISOString().split('T')[0];
-      }
-    }
-  },
   created() {
     this.updateDate();
-    let getitem = localStorage.getItem("versionlist")
-    console.log("getitem", getitem)
-
-    if (getitem == null) {
-      localStorage.setItem("versionlist", JSON.stringify(this.versionslist));
-    }
-    this.newVersionList = JSON.parse(localStorage.getItem("versionlist"))
-    console.log("newVersionList", this.newVersionList)
-
-
+    this.updatedays();
+    // localStorage.setItem("Calculatedoctimelinedetail");
+    // localStorage.getItem("Calculatedoctimelinedetail");
   },
 
 }
 </script>
 <style>
-.v-text-field.v-text-field--enclosed .v-text-field__details {
-  display: none !important;
-}
-
-.editfield .v-input__slot {
-  /* width: 45%!important; */
-}
-
 .StatusDot {
   width: 8px;
   height: 8px;
@@ -574,8 +424,7 @@ td {
 .docversiontoolbar {
   box-shadow: none;
   border: 1px solid grey;
-  margin-bottom: 15px;
-  height: 8vh!important;
+  margin-bottom: 10px;
 }
 
 .recalculateDays {
