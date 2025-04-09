@@ -27,7 +27,7 @@ export default {
     name: 'VersionCard',
     data() {
         return {
-            Isversionseleceted: false
+            // Isversionseleceted: false
         }
     },
     props: [
@@ -36,11 +36,25 @@ export default {
     ],
     methods: {
         selectVersionForComparision() {
-            this.Isversionseleceted = true;
+    
+              this.Isversionseleceted={
+                id:this.version.id,
+                toshow:true
+              }
+
+            
+            this.selectedVersionListforcomparision=[];
+            // this.Isversionseleceted = false;
+            this.selectedVersionListforcomparision.push(this.version);
+            console.log("selectedVersionListforcomparision",this.selectedVersionListforcomparision);
+            // if(this.version.id){
+            //     this.Isversionseleceted = true;
+            // }
+            
         }
     },
     computed: {
-        ...mapWritableState(useCounterStore, ['showcompareBtn']),
+        ...mapWritableState(useCounterStore, ['showcompareBtn','selectedVersionListforcomparision','Isversionseleceted']),
         StatusColor() {
             if (this.version.State == "Approved") {
                 return "ActiveStatus";
@@ -58,7 +72,7 @@ export default {
             return "";
         },
         selectedversionStatus() {
-            if (this.Isversionseleceted == true ) {
+            if (this.Isversionseleceted.toshow == true && this.Isversionseleceted.id===this.version.id ) {
                 return "selectedversionbtn";
             }else if(this.version.id == this.SelectedVersionid){
                 return "hiddenselectedversionbtn";

@@ -1,7 +1,12 @@
 import { defineStore } from 'pinia'
 export const useCounterStore = defineStore('counter', {
   state: () => ({ count: 0,
-    showcompareBtn:false
+    showcompareBtn:false,
+    selectedVersionListforcomparision: [],
+    Isversionseleceted: {
+      id:null,
+      toshow:false
+    }
 
    }),
   getters: {

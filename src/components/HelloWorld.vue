@@ -5,12 +5,18 @@
         <v-col md="5">
 
           <v-row style="padding: 10px 0px;">
-            <v-col md="9">
+            <v-col md="7">
               <p>Document Versions</p>
             </v-col>
-            <v-col md="3">
-              <v-btn v-if="showcompareBtn" small @click="Comparesection" style="background-color: #1976d2;">Cancel</v-btn>
-              <v-btn v-else small @click="Comparesection">Compare</v-btn>
+            <v-col md="5">
+              <div style="text-align: right;">
+                <div style="display: flex; justify-content: right;" v-if="showcompareBtn">
+                  <v-btn small @click="ShowComparison" style="background-color: #1976d2; color:white;">Compare</v-btn>
+                  <v-btn small @click="CancelCompareVersions"
+                    style="background-color: #1976d2; margin-left: 5px; color:white;">Cancel</v-btn>
+                </div>
+                <v-btn v-else small @click="ShowCompareBtns">Compare</v-btn>
+              </div>
             </v-col>
           </v-row>
 
@@ -33,22 +39,43 @@
                 <tbody>
                   <tr>
                     <td>Name</td>
-                    <td v-if="showeditfeilds" style="justify-items: right;">
-                      <v-text-field v-model="updatedName" outlined class="editfield"></v-text-field>
-                    </td>
-                    <td v-else style="text-align: right;">{{ versiondetail.Name }}</td>
+                    <td style="text-align: right;">{{ versiondetail.Name }}</td>
                   </tr>
                   <tr>
                     <td>Created</td>
                     <td v-if="showeditfeilds" style="justify-items: right;">
-                      <v-text-field v-model="updatedCreated" outlined class="editfield"></v-text-field>
+
+                      <!-- <v-menu ref="menu" v-model="ReviewDatePickerVisible" :close-on-content-click="false"
+                        transition="scale-transition" offset-y class="datepickermenu">
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-text-field v-model="Reviewgdate" placeholder="Date" outlined class="textfield"
+                            @click="ReviewDatePickerVisible = true" v-bind="attrs" v-on="on"></v-text-field>
+                        </template>
+                        <v-date-picker v-model="Reviewgdate" @input="ReviewDatePickerVisible = false" :width="420"
+                          style="font-size: 10px;"></v-date-picker>
+                      </v-menu>
+                      
+                      {{ VersionDatePickerVisible }} -->
+
+                      <v-menu ref="menu" v-model="VersionDatePickerVisible" :close-on-content-click="false"
+                        transition="scale-transition" offset-y class="datepickermenu">
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-text-field v-model="updatedCreated" placeholder="Date" outlined class="editfield"
+                            @click="VersionDatePickerVisible = true" v-bind="attrs" v-on="on"
+                            ></v-text-field>
+                        </template>
+                        <v-date-picker v-model="updatedCreated" @input="VersionDatePickerVisible = false"></v-date-picker>
+                      </v-menu>
+
                     </td>
-                  <td v-else style="text-align: right;">{{ versiondetail.Created }}</td>
+                    <td v-else style="text-align: right;">{{ versiondetail.Created }}</td>
                   </tr>
                   <tr>
                     <td>State</td>
                     <td v-if="showeditfeilds" style="justify-items: right;">
-                      <v-text-field v-model="updatedState" outlined class="editfield"></v-text-field>
+                      <!-- <v-text-field v-model="updatedState" outlined class="editfield"></v-text-field> -->
+                      <v-select v-model="updatedState" required outlined class="editfield selectfield"
+                        :items="VersionStates"></v-select>
                     </td>
                     <td v-else style="text-align: right;">
                       <v-btn small style="box-shadow: none; border-radius: 18px; padding:2px 10px;"
@@ -67,10 +94,10 @@
                   <tr>
                     <td>Changes</td>
                     <td v-if="showeditfeilds" style="justify-items: right;">
-                      <v-text-field v-model="editchange" outlined  class="editfield">
+                      <v-text-field v-model="editchange" outlined class="editfield">
                       </v-text-field>
                     </td>
-                    <td v-else style="justify-items: right;">
+                    <td v-else style="text-align: right;">
                       {{ versiondetail.changes }}
                     </td>
                   </tr>
@@ -92,15 +119,85 @@
                 <span class="dealStageTitle">Removed Content</span>
               </div>
               <div class="d-flex">
-                <div class="StatusDot" style="background-color: yellow; margin-top: 8px;"></div>
+                <div class="StatusDot" style="background-color: orange; margin-top: 8px;"></div>
                 <span class="dealStageTitle">Modified Content</span>
               </div>
             </div>
-            <p style="color: grey; margin:8px 0px">Comparing Version {{ selectedVersionsforcomparision[0].Name }} With {{ selectedVersionsforcomparision[1].Name }}</p>
+            <p style="color: grey; margin:8px 0px">Comparing Version {{ selectedVersionListforcomparision[0].Name }}
+              With {{
+                selectedVersionListforcomparision[1].Name }}</p>
             <div style="background-color: #EBECF1; padding: 10px; border: 1px solid grey;">
-              <p style="color: green; margin-bottom: 0px;">{{ selectedVersionsforcomparision[0].changes|| "-"  }}</p>
-              <p style="color: red; margin-bottom: 0px;">{{ selectedVersionsforcomparision[1].changes || "-" }}
+
+              <p v-if="selectedVersionListforcomparision[0].Name !== selectedVersionListforcomparision[1].Name && selectedVersionListforcomparision[0].Name !== '' && selectedVersionListforcomparision[1].Name !== ''"
+                style="margin-bottom: 0px; color: orange; font-size: 12px;">-
+                {{ selectedVersionListforcomparision[1].Name }} is Modified version of {{
+                  selectedVersionListforcomparision[0].Name }}
               </p>
+
+              <p v-if="selectedVersionListforcomparision[0].Name !== selectedVersionListforcomparision[1].Name && selectedVersionListforcomparision[0].Name == '' && selectedVersionListforcomparision[1].Name !== ''"
+                style="margin-bottom: 0px; color: green; font-size: 12px;">-
+                Newly added Name version Is {{ selectedVersionListforcomparision[1].Name }}
+              </p>
+
+              <p v-if="selectedVersionListforcomparision[0].Name !== selectedVersionListforcomparision[1].Name && selectedVersionListforcomparision[0].Name !== '' && selectedVersionListforcomparision[1].Name == ''"
+                style="margin-bottom: 0px; color: red; font-size: 12px;">-
+                {{ selectedVersionListforcomparision[0].Name }} version Name Is Removed
+              </p>
+
+              <p v-if="selectedVersionListforcomparision[0].Author !== selectedVersionListforcomparision[1].Author && selectedVersionListforcomparision[0].Author !== '' && selectedVersionListforcomparision[1].Author !== ''"
+                style="margin-bottom: 0px; color: orange; font-size: 12px;">
+                - Author Name has been changed from {{ selectedVersionListforcomparision[0].Author }} to {{
+                  selectedVersionListforcomparision[1].Author }}
+              </p>
+
+              <p v-if="selectedVersionListforcomparision[0].Author !== selectedVersionListforcomparision[1].Author && selectedVersionListforcomparision[0].Author == '' && selectedVersionListforcomparision[1].Author !== ''"
+                style="margin-bottom: 0px; color: green; font-size: 12px;">-
+                New Author {{ selectedVersionListforcomparision[1].Author }} has been added to {{
+                  selectedVersionListforcomparision[1].Name }}
+              </p>
+
+              <p v-if="selectedVersionListforcomparision[0].Author !== selectedVersionListforcomparision[1].Author && selectedVersionListforcomparision[0].Author !== '' && selectedVersionListforcomparision[1].Author == ''"
+                style="margin-bottom: 0px; color: red; font-size: 12px;">-
+                {{ selectedVersionListforcomparision[0].Author }} Author Name has been Removed from {{
+                  selectedVersionListforcomparision[0].Name }}
+              </p>
+
+              <p v-if="selectedVersionListforcomparision[0].Created !== selectedVersionListforcomparision[1].Created && selectedVersionListforcomparision[0].Created !== '' && selectedVersionListforcomparision[1].Created !== ''"
+                style="margin-bottom: 0px; color: orange; font-size: 12px;">
+                - Version Date has been changed from {{ selectedVersionListforcomparision[0].Created }} to {{
+                  selectedVersionListforcomparision[1].Created }}
+              </p>
+
+              <p v-if="selectedVersionListforcomparision[0].Created !== selectedVersionListforcomparision[1].Created && selectedVersionListforcomparision[0].Created == '' && selectedVersionListforcomparision[1].Created !== ''"
+                style="margin-bottom: 0px; color: green; font-size: 12px;">-
+                {{ selectedVersionListforcomparision[1].Name }} is Created on {{
+                  selectedVersionListforcomparision[1].Created }}
+              </p>
+
+              <p v-if="selectedVersionListforcomparision[0].Created !== selectedVersionListforcomparision[1].Created && selectedVersionListforcomparision[0].Created !== '' && selectedVersionListforcomparision[1].Created == ''"
+                style="margin-bottom: 0px; color: red; font-size: 12px;">-
+                Version Date has been Removed from {{ selectedVersionListforcomparision[1].Name }}
+              </p>
+
+
+              <p v-if="selectedVersionListforcomparision[0].State !== selectedVersionListforcomparision[1].State && selectedVersionListforcomparision[0].State !== '' && selectedVersionListforcomparision[1].State !== ''"
+                style="margin-bottom: 0px; color: orange; font-size: 12px;">
+                - Status has been changed from {{ selectedVersionListforcomparision[0].State }} to {{
+                  selectedVersionListforcomparision[1].State }}
+              </p>
+
+              <p v-if="selectedVersionListforcomparision[0].State !== selectedVersionListforcomparision[1].State && selectedVersionListforcomparision[0].State == '' && selectedVersionListforcomparision[1].State !== ''"
+                style="margin-bottom: 0px; color: green; font-size: 12px;">-
+
+                Status has been changed from {{ selectedVersionListforcomparision[0].State }} to {{
+                  selectedVersionListforcomparision[1].State }}
+              </p>
+
+              <p v-if="selectedVersionListforcomparision[0].State !== selectedVersionListforcomparision[1].State && selectedVersionListforcomparision[0].State !== '' && selectedVersionListforcomparision[1].State == ''"
+                style="margin-bottom: 0px; color: red; font-size: 12px;">-
+                Version State has been Removed from {{ selectedVersionListforcomparision[1].Name }}
+              </p>
+
             </div>
           </div>
 
@@ -129,7 +226,7 @@
                   <v-btn class="showdays">
                     <span>{{ ApprovalDurationDays }}Days</span>
                   </v-btn>
-                  <v-btn small class="saveDateBtn" @click="updateDate()">Save</v-btn>
+                  <v-btn small class="saveDateBtn" @click="updateDateFromReviewDate()">Save</v-btn>
                 </template>
                 <span style="padding-left: 10px;">Review Phase</span>
                 <span class="ProjectFormField-label">Date</span>
@@ -139,7 +236,7 @@
                     <v-text-field v-model="Reviewgdate" placeholder="Date" outlined class="textfield"
                       @click="ReviewDatePickerVisible = true" v-bind="attrs" v-on="on"></v-text-field>
                   </template>
-                  <v-date-picker v-model="Reviewgdate" @input=" ReviewDatePickerVisible = false" :width="420"
+                  <v-date-picker v-model="Reviewgdate" @input="ReviewDatePickerVisible = false" :width="420"
                     style="font-size: 10px;"></v-date-picker>
                 </v-menu>
               </v-timeline-item>
@@ -160,7 +257,8 @@
                       :width="420" style="font-size: 10px;"></v-date-picker>
                   </v-menu>
                 </template>
-                <v-btn small class="saveDateBtn" @click="updateDate()" style="margin-top: 25px;">Save</v-btn>
+                <v-btn small class="saveDateBtn" @click="updateDateFromApprovalDate()"
+                  style="margin-top: 25px;">Save</v-btn>
               </v-timeline-item>
 
               <v-timeline-item class="timelineItem">
@@ -168,7 +266,8 @@
                   <v-btn class="showdays">
                     <span>{{ DocumentValidityDays }}Days</span>
                   </v-btn>
-                  <v-btn small class="saveDateBtn" @click="updateDate()" style="margin-top: 6px;">Save</v-btn>
+                  <v-btn small class="saveDateBtn" @click="updateDateFromPublicationDate()"
+                    style="margin-top: 6px;">Save</v-btn>
                 </template>
                 <span style="padding-left: 35px;">Publication Date</span>
                 <v-menu ref="menu" v-model="PublicationDatePickerVisible" :close-on-content-click="false"
@@ -195,7 +294,8 @@
                       style="font-size: 10px;"></v-date-picker>
                   </v-menu>
                 </template>
-                <v-btn small class="saveDateBtn" @click="updateDate()" style="margin-top: 25px;">Save</v-btn>
+                <v-btn small class="saveDateBtn" @click="updateDateFromExpiryDate()"
+                  style="margin-top: 25px;">Save</v-btn>
               </v-timeline-item>
             </v-timeline>
           </div>
@@ -251,11 +351,21 @@ export default {
       // Calculatedoctimelinedetail:{
       // },
       // showcompareBtn:false,
-      editchange:"",
-      updatedName:"",
-      updatedCreated:"",
-      updatedState:"",
-      updatedAuthor:"",
+
+      validDateFormat: [
+        v => {
+          const regex = /^[A-Z][a-z]{2} \d{2}, \d{4}$/;
+          return regex.test(v) || 'Date must be in format: Apr 01, 2025';
+        }
+      ],
+
+      testDate: null,
+
+      editchange: "",
+      updatedName: "",
+      updatedCreated: null,
+      updatedState: "",
+      updatedAuthor: "",
 
       showeditfeilds: false,
       showcomparesection: false,
@@ -281,10 +391,14 @@ export default {
       updateDocCreatedDate: null,
       updateApprovalDeadlineDate: null,
 
+      VersionStates: ["Approved", 'In Review', "Draft"],
+      VersionDatePickerVisible: false,
+
       SelectedVersion: false,
       SelectedVersionid: null,
 
-      selectedVersionsforcomparision:[],
+      selectedVersionList: [],
+      // selectedVersionListforcomparision: [],
 
       versionslist: [
         {
@@ -292,7 +406,7 @@ export default {
           Created: "Mar 10,2025",
           State: "Approved",
           Author: "Kathrin Farnandes",
-          changes:"",
+          changes: "",
           id: 1
         },
         {
@@ -300,7 +414,7 @@ export default {
           Created: "Mar 15,2025",
           State: "In Review",
           Author: "Mylie Cyrus",
-          changes:"",
+          changes: "",
           id: 2
         },
         {
@@ -308,7 +422,7 @@ export default {
           Created: "Mar 20,2025",
           State: "In Review",
           Author: "Joe Jonas",
-          changes:"",
+          changes: "",
           id: 3
         },
         {
@@ -316,58 +430,80 @@ export default {
           Created: "Mar 27,2025",
           State: "Draft",
           Author: "Nick Jonas",
-          changes:"",
+          changes: "",
           id: 4
         },
         {
           Name: "Version 5.0",
-          Created: "Apr 1,2025",
+          Created: "2025-04-01",
           State: "Draft",
           Author: "Jane Smith",
-          changes:"",
+          changes: "",
           id: 5
         },
       ],
       versiondetail: {
       },
       newVersionList: null,
+      IsSave: false,
+      businessdays: null
     }
   },
   methods: {
 
-    OpenEditForm(){
-      console.log("versiondetail",this.versiondetail);
-      this.updatedName=this.versiondetail.Name;
-      this.updatedCreated=this.versiondetail.Created;
-      this.updatedState=this.versiondetail.State;
-      this.updatedAuthor=this.versiondetail.Author;
-      this.editchange=this.versiondetail.changes;
-      this.showeditfeilds=true;
+    OpenEditForm() {
+      console.log("versiondetail", this.versiondetail);
+      this.updatedName = this.versiondetail.Name;
+      this.updatedCreated = this.versiondetail.Created;
+      this.updatedState = this.versiondetail.State;
+      this.updatedAuthor = this.versiondetail.Author;
+      this.editchange = this.versiondetail.changes;
+      this.showeditfeilds = true;
     },
-    SaveEditInfo(){
-      
-      console.log("newVersionList",this.newVersionList)
+    SaveEditInfo() {
+
+      console.log("newVersionList", this.newVersionList)
       // console.log("versiondetail.id",this.versiondetail.id)
-      let updatedversion=this.newVersionList.find(version=>version.id==this.versiondetail.id)
-      console.log("updatedversion",updatedversion.Name)
+      let updatedversion = this.newVersionList.find(version => version.id == this.versiondetail.id)
+      console.log("updatedversion", updatedversion.Name)
 
-      updatedversion.Name=this.updatedName;
-      updatedversion.Created=this.updatedCreated;
-      updatedversion.State=this.updatedState;
-      updatedversion.Author=this.updatedAuthor;
-      updatedversion.changes=this.editchange;
+      updatedversion.Name = this.updatedName;
+      updatedversion.Created = this.updatedCreated;
+      updatedversion.State = this.updatedState;
+      updatedversion.Author = this.updatedAuthor;
+      updatedversion.changes = this.editchange;
 
-      console.log("newVersionList",this.newVersionList)
+      console.log("newVersionList", this.newVersionList)
       localStorage.setItem("versionlist", JSON.stringify(this.newVersionList));
 
-      this.showeditfeilds=false;
+      this.showeditfeilds = false;
     },
-    Comparesection() {
-      if(this.SelectedVersionid && this.selectedVersionsforcomparision.length !==2){
-        this.showcomparesection = true;
+    ShowCompareBtns() {
+
+      if (this.SelectedVersionid) {
         this.showcompareBtn = true;
       }
+    },
+    ShowComparison() {
+      console.log("selectedVersionListforcomparision 1 ---> ", this.selectedVersionListforcomparision)
 
+      let ExistingSelectedVersion = this.selectedVersionListforcomparision.find((item) => item.id == this.versiondetail.id)
+      console.log("ExistingSelectedVersion", ExistingSelectedVersion)
+      if (!ExistingSelectedVersion) {
+        this.selectedVersionListforcomparision.push(this.versiondetail)
+      }
+      console.log("selectedVersionListforcomparision 2 ---> ", this.selectedVersionListforcomparision)
+      if (this.selectedVersionListforcomparision.length == 2) {
+        this.selectedVersionListforcomparision.sort((a, b) => (a.id - b.id))
+        console.log("Sorted  selectedVersionListforcomparision", this.selectedVersionListforcomparision)
+        this.showcomparesection = true;
+      }
+    },
+    CancelCompareVersions() {
+      this.showcomparesection = false;
+      this.showcompareBtn = false;
+      this.Isversionseleceted.toshow = false;
+      this.selectedVersionListforcomparision = [];
     },
     recalculateDays() {
       let docCreatedDate = new Date(this.DocCreatedDate);
@@ -383,7 +519,7 @@ export default {
         console.log("formatted Reviewgdate", this.Reviewgdate)
       }
 
-      if (this.updateApprovalDurationDays) {
+      else if (this.updateApprovalDurationDays) {
         let reviewDate = new Date(this.Reviewgdate);
         // console.log("reviewDate",reviewDate)
 
@@ -394,7 +530,7 @@ export default {
         console.log("formatted ApprovalDeadlineDate", this.ApprovalDeadlineDate)
       }
 
-      if (this.updatePublicationLeadDays) {
+      else if (this.updatePublicationLeadDays) {
         let approvalDate = new Date(this.ApprovalDeadlineDate);
         // console.log("approvalDate",approvalDate)
 
@@ -405,7 +541,7 @@ export default {
         console.log("formatted PublicationDate", this.PublicationDate)
       }
 
-      if (this.updateDocumentValidityDays) {
+      else if (this.updateDocumentValidityDays) {
         let publicationDate = new Date(this.PublicationDate);
         // console.log("publicationDate",publicationDate)
 
@@ -414,67 +550,163 @@ export default {
 
         this.ExpiryDate = expiryDate.toISOString().split('T')[0];
         console.log("formatted ExpiryDate", this.ExpiryDate)
+      } else {
+        ""
       }
+
+      this.updateDate();
     },
     getversiondetail(version) {
       console.log("version", version)
-      this.SelectedVersionid = version.id
-      console.log("SelectedVersionid", this.SelectedVersionid)
-      this.versiondetail = version;
+      if (this.showcompareBtn == false) {
+        this.SelectedVersionid = version.id
 
-      console.log("versiondetail", this.versiondetail);
-      this.versiondeatilshow = true;
+        console.log("SelectedVersionid", this.SelectedVersionid)
 
-      if(this.selectedVersionsforcomparision.length<2){
-        this.selectedVersionsforcomparision.push(version);
-        console.log("selectedVersionsforcomparision",this.selectedVersionsforcomparision)
-      }else if(this.selectedVersionsforcomparision.length==1){
-        this.selectedVersionsforcomparision.pop();
-        console.log("selectedVersionsforcomparision",this.selectedVersionsforcomparision)
-        this.selectedVersionsforcomparision.push(version);
-        
-      }else{
-        this.selectedVersionsforcomparision=[];
+        this.versiondetail = version;
+
+        console.log("versiondetail", this.versiondetail);
+        this.versiondeatilshow = true;
+
       }
-    
-      console.log("selectedVersionsforcomparision",this.selectedVersionsforcomparision)
 
     },
     updateDate() {
+      this.IsSave = true;
       let docCreatedDate = new Date(this.DocCreatedDate);
       console.log("docCreatedDate", docCreatedDate)
 
+
       let reviewDate = new Date(this.Reviewgdate);
       console.log("reviewDate", reviewDate)
+
+      // this.ApprovalDeadlineDate = approvalDate.toISOString().split('T')[0];
       let approvalDate = new Date(this.ApprovalDeadlineDate);
-      // console.log("approvalDate",approvalDate)
+      console.log("approvalDate", approvalDate)
+
+      // this.PublicationDate = publicationDate.toISOString().split('T')[0];
       let publicationDate = new Date(this.PublicationDate);
       // console.log("publicationDate",publicationDate)
-      let expiryDate = new Date(this.ExpiryDate);
+
+      // this.ExpiryDate = expiryDate.toISOString().split('T')[0];
+      // let expiryDate = new Date(this.ExpiryDate);
       // console.log("expiryDate",expiryDate)
 
-      // this.updateReviewDays = Math.round(reviewDate - docCreatedDate);
-      // console.log("updateReviewDays",this.updateReviewDays)
+      // this.updateReviewDays = (reviewDate - docCreatedDate);
+      // console.log("updateReviewDays", this.updateReviewDays)
 
-      this.updateReviewDays = Math.round((reviewDate - docCreatedDate) / (1000 * 60 * 60 * 24));
-      console.log("updateReviewDays", this.updateReviewDays)
+      if (docCreatedDate && reviewDate) {
+        this.getBussinessDays(docCreatedDate, reviewDate);
+        console.log("getdays", this.businessdays)
+        this.updateReviewDays = Math.round(this.businessdays);
+        console.log("updateReviewDays", this.updateReviewDays)
+        console.log("f")
+      }
+      if (reviewDate && approvalDate) {
+        this.getBussinessDays(reviewDate, approvalDate);
+        console.log("getdays", this.businessdays)
+        this.updateApprovalDurationDays = Math.round(this.businessdays);
+        console.log("updateApprovalDurationDays", this.updateApprovalDurationDays)
+      }
+      if (approvalDate && publicationDate) {
+        this.getBussinessDays(reviewDate, approvalDate);
+        console.log("getdays", this.businessdays)
+        this.updatePublicationLeadDays = Math.round(this.businessdays);
+        console.log("updatePublicationLeadDays", this.updatePublicationLeadDays)
+      }
+      if (approvalDate && publicationDate) {
+        this.getBussinessDays(approvalDate, publicationDate);
+        console.log("getdays", this.businessdays)
+        this.updateDocumentValidityDays = Math.round(this.businessdays);
+        console.log("updateDocumentValidityDays", this.updateDocumentValidityDays)
+      }
+
+    },
+    getReviewgdate() {
+      let reviewDate = new Date(this.Reviewgdate);
+      if (this.updateApprovalDurationDays) {
+        let approvalDate = new Date(reviewDate);
+        approvalDate.setDate(reviewDate.getDate() + parseInt(this.updateApprovalDurationDays));
+        // this.ApprovalDeadlineDate = new Date(approvalDate);
+        this.ApprovalDeadlineDate = approvalDate.toISOString().split('T')[0];
 
 
-      this.updateApprovalDurationDays = Math.round((approvalDate - reviewDate) / (1000 * 60 * 60 * 24));
-      console.log("updateApprovalDurationDays", this.updateApprovalDurationDays)
+      }
+    },
+    getApprovalDeadlineDate() {
+      let approvalDate = new Date(this.ApprovalDeadlineDate);
+      if (this.updatePublicationLeadDays) {
+        let publicationDate = new Date(approvalDate);
+        publicationDate.setDate(approvalDate.getDate() + parseInt(this.updatePublicationLeadDays));
+        // this.PublicationDate = new Date(publicationDate);
+        this.PublicationDate = publicationDate.toISOString().split('T')[0];
 
-      this.updatePublicationLeadDays = Math.round((publicationDate - approvalDate) / (1000 * 60 * 60 * 24));
-      console.log("updatePublicationLeadDays", this.updatePublicationLeadDays)
+      }
 
-      this.updateDocumentValidityDays = Math.round((expiryDate - publicationDate) / (1000 * 60 * 60 * 24));
-      console.log("updateDocumentValidityDays", this.updateDocumentValidityDays)
+    },
+    getPublicationDate() {
+      let publicationDate = new Date(this.PublicationDate);
+      if (this.updateDocumentValidityDays) {
+        let expiryDate = new Date(publicationDate);
+        expiryDate.setDate(publicationDate.getDate() + parseInt(this.updateDocumentValidityDays));
+        // this.ExpiryDate = new Date(expiryDate);
+        this.ExpiryDate = expiryDate.toISOString().split('T')[0];
+      }
+
+
+    },
+    getExpiryDate() {
+      let expiryDate = new Date(this.ExpiryDate);
+      this.ExpiryDate = expiryDate.toISOString().split('T')[0];
+
+
+    },
+    getBussinessDays(start, end) {
+      var s = new Date(start);
+      var e = new Date(end);
+      var addOneMoreDay = 0;
+      if (s.getDay() == 0 || s.getDay() == 6) {
+        addOneMoreDay = 1;
+      }
+      console.log(addOneMoreDay)
+      let days = 0
+      while (s < e) {
+        s.setDate(s.getDate() + 1);
+        if (s.getDay() != 0 && s.getDay() != 6) {
+          ++days;
+        }
+        this.businessdays = days;
+        console.log(this.businessdays)
+      }
+    },
+    updateDateFromReviewDate() {
+      this.getReviewgdate();
+      this.getApprovalDeadlineDate();
+      this.getPublicationDate();
+      this.getExpiryDate();
+      this.updateDate();
+    },
+    updateDateFromApprovalDate() {
+      this.getApprovalDeadlineDate();
+      this.getPublicationDate();
+      this.getExpiryDate();
+      this.updateDate()
+    },
+    updateDateFromPublicationDate() {
+      this.getPublicationDate();
+      this.getExpiryDate();
+      this.updateDate()
+    },
+    updateDateFromExpiryDate() {
+      this.getExpiryDate();
+      this.updateDate()
     }
   },
   components: {
     VersionCard
   },
   computed: {
-    ...mapWritableState(useCounterStore, ['showcompareBtn']),
+    ...mapWritableState(useCounterStore, ['showcompareBtn', 'selectedVersionListforcomparision', 'Isversionseleceted']),
     ReviewDays() {
       return this.updateReviewDays;
     },
@@ -499,37 +731,37 @@ export default {
       return ""
     }
 
-
   },
   watch: {
-    Reviewgdate(newDate) {
-      let reviewDate = new Date(newDate);
-      if (this.updateApprovalDurationDays) {
-        let approvalDate = new Date(reviewDate);
-        approvalDate.setDate(reviewDate.getDate() + parseInt(this.updateApprovalDurationDays));
-        // this.ApprovalDeadlineDate = new Date(approvalDate);
-        this.ApprovalDeadlineDate = approvalDate.toISOString().split('T')[0];
-      }
-    },
-    ApprovalDeadlineDate(newDate) {
-      let approvalDate = new Date(newDate);
-      if (this.updatePublicationLeadDays) {
-        let publicationDate = new Date(approvalDate);
-        publicationDate.setDate(approvalDate.getDate() + parseInt(this.updatePublicationLeadDays));
-        // this.PublicationDate = new Date(publicationDate);
-        this.PublicationDate = publicationDate.toISOString().split('T')[0];
+    // Reviewgdate(newDate) {
+    //   let reviewDate = new Date(newDate);
+    //   if (this.updateApprovalDurationDays) {
+    //     let approvalDate = new Date(reviewDate);
+    //     approvalDate.setDate(reviewDate.getDate() + parseInt(this.updateApprovalDurationDays));
+    //     // this.ApprovalDeadlineDate = new Date(approvalDate);
+    //       this.ApprovalDeadlineDate = approvalDate.toISOString().split('T')[0];
 
-      }
-    },
-    PublicationDate(newDate) {
-      let publicationDate = new Date(newDate);
-      if (this.updateDocumentValidityDays) {
-        let expiryDate = new Date(publicationDate);
-        expiryDate.setDate(publicationDate.getDate() + parseInt(this.updateDocumentValidityDays));
-        // this.ExpiryDate = new Date(expiryDate);
-        this.ExpiryDate = expiryDate.toISOString().split('T')[0];
-      }
-    }
+    //   }
+    // },
+    // ApprovalDeadlineDate(newDate) {
+    //   let approvalDate = new Date(newDate);
+    //   if (this.updatePublicationLeadDays) {
+    //     let publicationDate = new Date(approvalDate);
+    //     publicationDate.setDate(approvalDate.getDate() + parseInt(this.updatePublicationLeadDays));
+    //     // this.PublicationDate = new Date(publicationDate);
+    //       this.PublicationDate = publicationDate.toISOString().split('T')[0];
+
+    //   }
+    // },
+    // PublicationDate(newDate) {
+    //   let publicationDate = new Date(newDate);
+    //   if (this.updateDocumentValidityDays) {
+    //     let expiryDate = new Date(publicationDate);
+    //     expiryDate.setDate(publicationDate.getDate() + parseInt(this.updateDocumentValidityDays));
+    //     // this.ExpiryDate = new Date(expiryDate);
+    //       this.ExpiryDate = expiryDate.toISOString().split('T')[0];
+    //   }
+    // }
   },
   created() {
     this.updateDate();
@@ -541,13 +773,18 @@ export default {
     }
     this.newVersionList = JSON.parse(localStorage.getItem("versionlist"))
     console.log("newVersionList", this.newVersionList)
-
+    this.updateDateFromReviewDate();
 
   },
 
 }
 </script>
 <style>
+.selectfield .v-text-field fieldset,
+.v-text-field .v-input__control {
+  width: 192px !important;
+}
+
 .v-text-field.v-text-field--enclosed .v-text-field__details {
   display: none !important;
 }
@@ -575,7 +812,7 @@ td {
   box-shadow: none;
   border: 1px solid grey;
   margin-bottom: 15px;
-  height: 8vh!important;
+  height: 8vh !important;
 }
 
 .recalculateDays {
