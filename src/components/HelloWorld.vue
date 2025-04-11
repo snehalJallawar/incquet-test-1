@@ -51,20 +51,20 @@
                           <v-text-field v-model="Reviewgdate" placeholder="Date" outlined class="textfield"
                             @click="ReviewDatePickerVisible = true" v-bind="attrs" v-on="on"></v-text-field>
                         </template>
-                        <v-date-picker v-model="Reviewgdate" @input="ReviewDatePickerVisible = false" :width="420"
-                          style="font-size: 10px;"></v-date-picker>
-                      </v-menu>
-                      
-                      {{ VersionDatePickerVisible }} -->
+<v-date-picker v-model="Reviewgdate" @input="ReviewDatePickerVisible = false" :width="420"
+  style="font-size: 10px;"></v-date-picker>
+</v-menu>
+
+{{ VersionDatePickerVisible }} -->
 
                       <v-menu ref="menu" v-model="VersionDatePickerVisible" :close-on-content-click="false"
                         transition="scale-transition" offset-y class="datepickermenu">
                         <template v-slot:activator="{ on, attrs }">
                           <v-text-field v-model="updatedCreated" placeholder="Date" outlined class="editfield"
-                            @click="VersionDatePickerVisible = true" v-bind="attrs" v-on="on"
-                            ></v-text-field>
+                            @click="VersionDatePickerVisible = true" v-bind="attrs" v-on="on"></v-text-field>
                         </template>
-                        <v-date-picker v-model="updatedCreated" @input="VersionDatePickerVisible = false"></v-date-picker>
+                        <v-date-picker v-model="updatedCreated"
+                          @input="VersionDatePickerVisible = false"></v-date-picker>
                       </v-menu>
 
                     </td>
@@ -211,7 +211,7 @@
 
           <div class="d-flex justify-space-around">
             <v-timeline truncate-line="start" style="width: 400px;">
-              <v-timeline-item class="timelineItem">
+              <v-timeline-item class="timelineItem timelineItem1">
                 <template v-slot:opposite>
                   <v-btn class="showdays">
                     <span>{{ ReviewDays }}Days</span>
@@ -221,7 +221,7 @@
                 </template>
               </v-timeline-item>
 
-              <v-timeline-item class="timelineItem">
+              <v-timeline-item class="timelineItem timelineItem2">
                 <template v-slot:opposite>
                   <v-btn class="showdays">
                     <span>{{ ApprovalDurationDays }}Days</span>
@@ -241,7 +241,7 @@
                 </v-menu>
               </v-timeline-item>
 
-              <v-timeline-item class="timelineItem">
+              <v-timeline-item class="timelineItem timelineItem3">
                 <template v-slot:opposite>
                   <v-btn class="showdays">
                     <span>{{ PublicationLeadDays }}Days</span>
@@ -261,7 +261,7 @@
                   style="margin-top: 25px;">Save</v-btn>
               </v-timeline-item>
 
-              <v-timeline-item class="timelineItem">
+              <v-timeline-item class="timelineItem timelineItem4">
                 <template v-slot:opposite>
                   <v-btn class="showdays">
                     <span>{{ DocumentValidityDays }}Days</span>
@@ -281,7 +281,7 @@
                 </v-menu>
               </v-timeline-item>
 
-              <v-timeline-item class="timelineItem">
+              <v-timeline-item class="timelineItem timelineItem5">
                 <template v-slot:opposite>
                   <span>Expiration</span>
                   <v-menu ref="menu" v-model="ExpiryDatePickerVisible" :close-on-content-click="false"
@@ -306,13 +306,13 @@
             <v-row class="my-0">
               <v-col md="6" lg="6" sm="12" class="pt-2 pb-2">
                 <span class="FormField-label">Review Duration (Business Days)</span>
-                <v-text-field v-model="updateReviewDays" placeholder="Review Duration" outlined
+                <v-text-field v-model="updateReviewDays" type="Number" placeholder="Review Duration" outlined
                   class="textfield"></v-text-field>
               </v-col>
               <v-col md="6" lg="6" sm="12" class="pt-2 pb-2">
                 <span class="FormField-label">Approval Duration (Business Days)</span>
-                <v-text-field v-model="updateApprovalDurationDays" placeholder="Enter Approval Duration" outlined
-                  class="textfield"></v-text-field>
+                <v-text-field v-model="updateApprovalDurationDays" type="Number" placeholder="Enter Approval Duration"
+                  outlined class="textfield"></v-text-field>
               </v-col>
             </v-row>
 
@@ -320,14 +320,14 @@
               <v-col md="6" lg="6" sm="12" class="pt-2 pb-2">
 
                 <span class="FormField-label">Publication Lead Time</span>
-                <v-text-field v-model="updatePublicationLeadDays" placeholder="Enter Publication Lead Time" outlined
-                  class="textfield"></v-text-field>
+                <v-text-field v-model="updatePublicationLeadDays" type="Number"
+                  placeholder="Enter Publication Lead Time" outlined class="textfield"></v-text-field>
               </v-col>
 
               <v-col md="6" lg="6" sm="12" class="pt-2 pb-2">
                 <span class="FormField-label">Document Validity (days)</span>
-                <v-text-field v-model="updateDocumentValidityDays" placeholder="Enter validity days" outlined
-                  class="textfield"></v-text-field>
+                <v-text-field v-model="updateDocumentValidityDays" type="Number" placeholder="Enter validity days"
+                  outlined class="textfield"></v-text-field>
               </v-col>
             </v-row>
             <v-btn class="recalculateDays" @click="recalculateDays">Recalculate Timeline</v-btn>
@@ -403,7 +403,7 @@ export default {
       versionslist: [
         {
           Name: "Version 1.0",
-          Created: "Mar 10,2025",
+          Created: "2025-03-10",
           State: "Approved",
           Author: "Kathrin Farnandes",
           changes: "",
@@ -411,7 +411,7 @@ export default {
         },
         {
           Name: "Version 2.0",
-          Created: "Mar 15,2025",
+          Created: "2025-03-15",
           State: "In Review",
           Author: "Mylie Cyrus",
           changes: "",
@@ -419,7 +419,7 @@ export default {
         },
         {
           Name: "Version 3.0",
-          Created: "Mar 20,2025",
+          Created: "2025-03-20",
           State: "In Review",
           Author: "Joe Jonas",
           changes: "",
@@ -427,7 +427,7 @@ export default {
         },
         {
           Name: "Version 4.0",
-          Created: "Mar 27,2025",
+          Created: "2025-03-27",
           State: "Draft",
           Author: "Nick Jonas",
           changes: "",
@@ -459,6 +459,9 @@ export default {
       this.updatedAuthor = this.versiondetail.Author;
       this.editchange = this.versiondetail.changes;
       this.showeditfeilds = true;
+    },
+    CancelEditForm(){
+      this.showeditfeilds = false;
     },
     SaveEditInfo() {
 
@@ -623,17 +626,17 @@ export default {
 
     },
     getReviewgdate() {
-      let reviewDate = new Date(this.Reviewgdate);
-      if (this.updateApprovalDurationDays) {
-        let approvalDate = new Date(reviewDate);
-        approvalDate.setDate(reviewDate.getDate() + parseInt(this.updateApprovalDurationDays));
-        // this.ApprovalDeadlineDate = new Date(approvalDate);
-        this.ApprovalDeadlineDate = approvalDate.toISOString().split('T')[0];
-
+        let reviewDate = new Date(this.Reviewgdate);
+        if (this.updateApprovalDurationDays) {
+          let approvalDate = new Date(reviewDate);
+          approvalDate.setDate(reviewDate.getDate() + parseInt(this.updateApprovalDurationDays));
+          // this.ApprovalDeadlineDate = new Date(approvalDate);
+          this.ApprovalDeadlineDate = approvalDate.toISOString().split('T')[0];
 
       }
     },
     getApprovalDeadlineDate() {
+      
       let approvalDate = new Date(this.ApprovalDeadlineDate);
       if (this.updatePublicationLeadDays) {
         let publicationDate = new Date(approvalDate);
@@ -684,22 +687,22 @@ export default {
       this.getApprovalDeadlineDate();
       this.getPublicationDate();
       this.getExpiryDate();
-      this.updateDate();
+      // this.updateDate();
     },
     updateDateFromApprovalDate() {
       this.getApprovalDeadlineDate();
       this.getPublicationDate();
       this.getExpiryDate();
-      this.updateDate()
+      // this.updateDate()
     },
     updateDateFromPublicationDate() {
       this.getPublicationDate();
       this.getExpiryDate();
-      this.updateDate()
+      // this.updateDate()
     },
     updateDateFromExpiryDate() {
       this.getExpiryDate();
-      this.updateDate()
+      // this.updateDate()
     }
   },
   components: {
@@ -818,7 +821,7 @@ td {
 .recalculateDays {
   width: 100%;
   background-color: #1976d2 !important;
-  color: #FFF;
+  color: #FFFF!important;
 }
 
 .FormField-label {
@@ -857,4 +860,5 @@ td {
   bottom: 0;
   box-shadow: none;
 }
+
 </style>
